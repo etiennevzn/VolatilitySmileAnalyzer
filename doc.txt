@@ -1,0 +1,54 @@
+https://en.wikipedia.org/wiki/Volatility_smile
+https://chatgpt.com/c/6a02301f-7fa4-83eb-a948-5e8dc7775b41
+
+IV : https://www.investopedia.com/terms/i/iv.asp
+
+API : https://github.com/alpacahq/alpaca-py/blob/master/examples/options/options-trading-basic.ipynb
+
+Activer venv : venv\Scripts\Activate.ps1
+
+
+Idées : 
+
+faire une courbe qui montre les expected move et les quantiles 
+
+Pour un volatility smile propre, le bon enchaînement est :
+
+récupérer le sous-jacent spot,
+choisir une échéance,
+récupérer une plage de strikes autour du spot,
+récupérer les quotes de ces contrats,
+calculer l’IV pour chacun.
+
+============================================================
+
+4. Construire le module de pricing / IV
+
+Dans volatility_smile.py:
+calcul du temps à maturité,
+calcul d’implied volatility contrat par contrat,
+filtres qualité (bid/ask valides, spreads trop larges, maturité minimale).
+Critère de fin: tu obtiens IV par strike et expiration sans NaN massifs.
+5. Générer les objets de visualisation
+
+Dans plotter.py:
+sourire 2D (IV vs strike ou moneyness) pour une maturité,
+surface 3D (strike x maturité x IV).
+Critère de fin: figures lisibles et mises à jour sur nouvelles données.
+6. Connecter l’app Streamlit
+
+Dans streamlit_app.py:
+sidebar: ticker, échéance, fenêtre de strikes, taux sans risque, refresh,
+affichage: graphe 2D, graphe 3D, table des options,
+gestion erreurs API (message user-friendly).
+Critère de fin: l’utilisateur peut changer les paramètres et voir le smile se recalculer.
+7. Ajouter qualité et robustesse
+
+Complète test_api.py, test_analysis.py, test_visualization.py.
+Ajoute logs + gestion des cas limites (marché fermé, options illiquides, timeout API).
+Critère de fin: tests de base passent, app ne casse pas sur erreurs réseau/API.
+8. Préparer GitHub et livraison
+
+Mets à jour README.md: setup, variables .env, lancement Streamlit, captures.
+Vérifie requirements.txt, .gitignore, LICENSE.
+Critère de fin: un clone du repo permet de lancer l’app en quelques commandes.
