@@ -6,6 +6,7 @@ from math import log, sqrt, exp
 from scipy.stats import norm
 from scipy.optimize import brentq
 from datetime import datetime, timezone, time
+import pandas as pd
 
 class VolatilitySmileAnalyzer:
     """Class to analyze volatility smile from option data"""
@@ -61,6 +62,8 @@ class VolatilitySmileAnalyzer:
         """Build the volatility smile data"""
         implied_vols = []
         strikes = []
+        tte = []
+        expiration_dates = []
         for row in self.options_data.itertuples():
             iv = self.calculate_implied_volatility(
                 option_price=row.mid,
@@ -74,17 +77,15 @@ class VolatilitySmileAnalyzer:
             if iv is not None:
                 strikes.append(row.strike)
                 implied_vols.append(iv)
+                tte.append(self.get_time_to_expiry(row.expiry))
+                expiration_dates.append(row.expiry)
 
         if not strikes:
             print("No IV to plot")
             return
 
-        if dim == 2 : 
-            return implied_vols, strikes
+        return pd.DataFrame({"implied_vol" : implied_vols, "strike" : strikes, "expiration_date" : expiration_dates, "time_to_expiry" : tte})
         
-        
-    
-
     
     def fit_smile_model(self, model_type: str = 'spline'):
         """Fit a model to the volatility smile"""

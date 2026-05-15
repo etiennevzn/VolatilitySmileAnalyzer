@@ -50,10 +50,22 @@ class OptionFetcher:
         )
         return self.trade_client.get_option_contracts(req)
     
-    def get_option_prices(self, contract_symbol: list):
-        return self.option_historical_client.get_option_latest_quote(OptionLatestQuoteRequest(
-            symbol_or_symbols=contract_symbol
-        ))
+    def get_option_prices(self, contract_symbols: list, chunk_size: int = 100):
+        all_quotes = {}
+
+        for i in range(0, len(contract_symbols), chunk_size):
+            chunk = contract_symbols[i:i + chunk_size]
+            resp = self.option_historical_client.get_option_latest_quote(
+                OptionLatestQuoteRequest(symbol_or_symbols=chunk)
+            )
+
+            if isinstance(resp, dict):
+                all_quotes.update(resp)
+            else:
+                for sym, quote in resp.items():
+                    all_quotes[sym] = quote
+
+        return all_quotes
     
     def get_spot_price(self, symbol : str):
         request = StockLatestQuoteRequest(symbol_or_symbols=[symbol])
@@ -67,37 +79,63 @@ class OptionFetcher:
         trade_response = self.stock_historical_client.get_stock_latest_trade(trade_request)
         return trade_response[symbol].price
     
-    def build_options_df(self, symbol : str, expiration_date : str, spot_delta : int, n_contracts : int):
+    def build_options_df(self, symbol : str, expiration_dates : list, spot_delta : int, n_contracts : int):
         spot = self.get_spot_price(symbol)
         lower_bound = str(spot-spot_delta)
         upper_bound = str(spot+spot_delta)
 
-        contracts = self.fetch_options_contracts(
-            symbol=[symbol],
-            expiration_date=expiration_date,
-            strike_price_gte=lower_bound,
-            strike_price_lte=upper_bound,
-            limit=n_contracts,
-        )
+        contracts = []
+        for exp in expiration_dates:
+            resp = self.fetch_options_contracts(
+                symbol=[symbol],
+                expiration_date=exp,
+                strike_price_gte=lower_bound,
+                strike_price_lte=upper_bound,
+                limit=n_contracts,
+            )
 
-        contract_symbols = [c.symbol for c in contracts.option_contracts]
+            if resp and getattr(resp, "option_contracts", None):
+                contracts.extend(resp.option_contracts)
+
+        contract_symbols = [c.symbol for c in contracts]
+        if not contract_symbols:
+            return pd.DataFrame([])
+        
         quotes = self.get_option_prices(contract_symbols)
 
         data = []
-        for contract in contracts.option_contracts:
-            symbol = contract.symbol
-            quote = quotes[symbol]
-            
+        for contract in contracts:
+            s = contract.symbol
+            # quotes peut être un dict-like ; utiliser .get pour éviter KeyError
+            quote = quotes.get(s) if hasattr(quotes, "get") else quotes[s] if s in quotes else None
+            if quote is None:
+                continue
+
+            bid = getattr(quote, "bid_price", 0.0) or 0.0
+            ask = getattr(quote, "ask_price", 0.0) or 0.0
+
+            # filtrer les instruments illiquides ou quotes invalides
+            if bid <= 0 or ask <= bid:
+                continue
+
+            typ = None
+            if hasattr(contract, "type") and contract.type is not None:
+                typ = getattr(contract.type, "value", None) or contract.type.name.lower()
+            else:
+                typ = getattr(contract, "contract_type", None)
+
+            mid = (bid + ask) / 2
+
             data.append({
-                "symbol": symbol,
-                "strike": contract.strike_price,
-                "expiry": contract.expiration_date,
-                "type": contract.type.value,
-                "bid": quote.bid_price,
-                "ask": quote.ask_price,
-                "mid": (quote.bid_price + quote.ask_price) / 2,
-                "spread": quote.ask_price - quote.bid_price,
-                "timestamp": quote.timestamp,
+                "symbol": s,
+                "strike": getattr(contract, "strike_price", None),
+                "expiry": getattr(contract, "expiration_date", None),
+                "type": typ,
+                "bid": bid,
+                "ask": ask,
+                "mid": mid,
+                "spread": ask - bid,
+                "timestamp": getattr(quote, "timestamp", None),
             })
 
         return pd.DataFrame(data)

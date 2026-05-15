@@ -74,14 +74,6 @@ Voir le fichier `.env.example` pour la configuration requise (clé API, etc.)
 Ce projet supporte les APIs pour les options (à spécifier selon votre choix):
 - Exemple : Alpha Vantage, IEX Cloud, etc.
 
-## Contribution
-
-Les contributions sont les bienvenues ! Veuillez créer une branche pour vos modifications.
-
 ## License
 
-Voir le fichier [LICENSE](LICENSE)
-
-## Contact
-
-Pour des questions, veuillez ouvrir une issue sur GitHub.
+MIT [LICENSE](LICENSE)
