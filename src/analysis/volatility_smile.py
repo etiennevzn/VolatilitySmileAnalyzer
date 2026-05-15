@@ -58,12 +58,14 @@ class VolatilitySmileAnalyzer:
         except ValueError:
             return None
     
-    def build_smile_data(self, dim=2):
+    def build_smile_data(self):
         """Build the volatility smile data"""
         implied_vols = []
         strikes = []
         tte = []
         expiration_dates = []
+        moneyness = []
+        option_type = []
         for row in self.options_data.itertuples():
             iv = self.calculate_implied_volatility(
                 option_price=row.mid,
@@ -79,12 +81,14 @@ class VolatilitySmileAnalyzer:
                 implied_vols.append(iv)
                 tte.append(self.get_time_to_expiry(row.expiry))
                 expiration_dates.append(row.expiry)
+                moneyness.append(row.strike / self.spot_price)
+                option_type.append(row.type)
 
         if not strikes:
             print("No IV to plot")
             return
 
-        return pd.DataFrame({"implied_vol" : implied_vols, "strike" : strikes, "expiration_date" : expiration_dates, "time_to_expiry" : tte})
+        return pd.DataFrame({"implied_vol" : implied_vols, "strike" : strikes, "expiration_date" : expiration_dates, "time_to_expiry" : tte, "moneyness" : moneyness, "type" : option_type})
         
     
     def fit_smile_model(self, model_type: str = 'spline'):
