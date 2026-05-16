@@ -1,6 +1,6 @@
 # Volatility Smile Analyzer
 
-An application to fetch option prices via APIs, analyze the volatility smile, and visualize the data in 2D and 3D.
+An application to fetch option prices via an API, analyze the volatility smile, and visualize the data in 2D and 3D.
 
 ## Description
 
@@ -8,7 +8,6 @@ This project enables you to:
 - Fetch current option prices from the Alpaca API
 - Calculate and analyze the volatility smile
 - Visualize the volatility smile in 2D and 3D
-- Interact with the app through a Streamlit interface with sliders to adjust parameters
 
 ## Requirements
 
@@ -37,14 +36,20 @@ pip install -r requirements.txt
 4. Configure environment variables
 ```bash
 cp .env.example .env
-# Edit .env and add your API and Secret keys
+# Edit .env and add your API and Secret keys and any other settings
 ```
 
 ## Usage
 
-Run the Streamlit application:
+Configure parameters and run the analysis notebook:
+
+Open and run the `vol_smile.ipynb` Jupyter notebook to configure parameters and execute the volatility-smile algorithms (recommended in JupyterLab or VS Code):
+
 ```bash
-streamlit run app/streamlit_app.py
+# from the project root, open the notebook in JupyterLab
+jupyter lab vol_smile.ipynb
+# or open in VS Code
+code vol_smile.ipynb
 ```
 
 ## Project structure
@@ -54,7 +59,6 @@ volatility_smile/
 ├── src/                 # Main source code
 │   ├── api/             # Module to fetch data from APIs
 │   └── analysis/        # Volatility smile analysis
-├── app/                 # Streamlit application
 ├── config/              # Configuration and settings
 ├── requirements.txt     # Dependencies
 ├── .env.example         # Example .env file
