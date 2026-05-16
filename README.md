@@ -1,78 +1,74 @@
 # Volatility Smile Analyzer
 
-Une application pour récupérer les prix des options via API, analyser le volatility smile et visualiser les données en 2D et 3D.
+An application to fetch option prices via APIs, analyze the volatility smile, and visualize the data in 2D and 3D.
 
 ## Description
 
-Ce projet permet de :
-- Récupérer les prix courants des options via une API
-- Calculer et analyser le volatility smile
-- Visualiser le volatility smile en 2D et 3D
-- Interagir avec l'application via une interface Streamlit avec des curseurs pour ajuster les paramètres
+This project enables you to:
+- Fetch current option prices from the Alpaca API
+- Calculate and analyze the volatility smile
+- Visualize the volatility smile in 2D and 3D
+- Interact with the app through a Streamlit interface with sliders to adjust parameters
 
-## Prérequis
+## Requirements
 
 - Python 3.8+
 - pip
 
 ## Installation
 
-1. Cloner le repository
+1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/volatility_smile.git
+git clone https://github.com/etiennevzn/VolatilitySmileAnalyzer.git
 cd volatility_smile
 ```
 
-2. Créer un environnement virtuel
+2. Create a virtual environment
 ```bash
 python -m venv venv
-source venv/bin/activate  # Sur Windows: venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. Installer les dépendances
+3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Configurer les variables d'environnement
+4. Configure environment variables
 ```bash
 cp .env.example .env
-# Éditer .env et ajouter votre clé API
+# Edit .env and add your API and Secret keys
 ```
 
-## Utilisation
+## Usage
 
-Lancer l'application Streamlit :
+Run the Streamlit application:
 ```bash
 streamlit run app/streamlit_app.py
 ```
 
-## Structure du projet
+## Project structure
 
 ```
 volatility_smile/
-├── src/                 # Code source principal
-│   ├── api/            # Module pour récupérer les données via API
-│   ├── analysis/       # Analyse du volatility smile
-│   └── visualization/  # Visualisation 2D/3D
-├── app/                # Application Streamlit
-├── config/             # Configuration et settings
-├── tests/              # Tests unitaires
-├── data/               # Données locales
-├── requirements.txt    # Dépendances
-├── .env.example        # Exemple de fichier .env
-├── .gitignore         # Fichiers à ignorer dans Git
-└── README.md          # Documentation
+├── src/                 # Main source code
+│   ├── api/             # Module to fetch data from APIs
+│   └── analysis/        # Volatility smile analysis
+├── app/                 # Streamlit application
+├── config/              # Configuration and settings
+├── requirements.txt     # Dependencies
+├── .env.example         # Example .env file
+├── .gitignore           # Files to ignore in Git
+└── README.md            # Documentation
 ```
 
 ## Configuration
 
-Voir le fichier `.env.example` pour la configuration requise (clé API, etc.)
+See `.env.example` for required configuration (API key, etc.).
 
-## API Support
+## API support
 
-Ce projet supporte les APIs pour les options (à spécifier selon votre choix):
-- Exemple : Alpha Vantage, IEX Cloud, etc.
+This project currently only supports the Alpaca API. If you want to use another API, edit the volatility_smile.py and option_fetcher.py files. 
 
 ## License
 
