@@ -18,7 +18,7 @@ This project enables you to:
 
 1. Clone the repository
 ```bash
-git clone https://github.com/etiennevzn/VolatilitySmileAnalyzer.git
+git clone https://github.com/etiennevzn/Volatility-Smile-Analyzer.git
 cd volatility_smile
 ```
 

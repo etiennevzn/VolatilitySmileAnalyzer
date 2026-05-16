@@ -9,7 +9,7 @@ setup(
     description="Volatility Smile Analyzer - Visualize and analyze option volatility",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/etiennevzn/VolatilitySmileAnalyzer",
+    url="https://github.com/etiennevzn/Volatility-Smile-Analyzer",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
