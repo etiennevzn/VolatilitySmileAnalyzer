@@ -12,6 +12,8 @@ from alpaca.data.requests import OptionLatestQuoteRequest
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockLatestQuoteRequest, StockLatestTradeRequest
 import pandas as pd
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 
 class OptionFetcher:
     """Class to handle API calls and option data retrieval"""
@@ -24,6 +26,37 @@ class OptionFetcher:
         self.trade_client = TradingClient(api_key=api_key, secret_key=secret_key, paper=True)
         self.option_historical_client = OptionHistoricalDataClient(api_key=api_key, secret_key=secret_key)
         self.stock_historical_client = StockHistoricalDataClient(api_key=api_key, secret_key=secret_key)
+
+
+    def next_friday(self, d: date) -> date:
+        days_ahead = (4 - d.weekday()) % 7  
+        return d + timedelta(days=days_ahead)
+
+    def build_expiration_dates(
+        self,
+        start_date: date | None = None,
+        weekly_count: int = 11,
+        monthly_offsets: list[int] | None = None,
+    ) -> list[str]:
+        if start_date is None:
+            start_date = date.today()
+
+        if monthly_offsets is None:
+            monthly_offsets = [3, 4, 5, 7, 10, 13, 19]
+
+        expirations = []
+
+        first_friday = self.next_friday(start_date)
+
+        for i in range(weekly_count):
+            expirations.append((first_friday + timedelta(weeks=i)).isoformat())
+
+        for months in monthly_offsets:
+            target = first_friday + relativedelta(months=months)
+            expirations.append(self.next_friday(target).isoformat())
+
+        expirations = sorted(set(expirations))
+        return expirations
 
     def fetch_options_contracts(self, 
                       symbol: list, 
@@ -106,7 +139,6 @@ class OptionFetcher:
         data = []
         for contract in contracts:
             s = contract.symbol
-            # quotes peut être un dict-like ; utiliser .get pour éviter KeyError
             quote = quotes.get(s) if hasattr(quotes, "get") else quotes[s] if s in quotes else None
             if quote is None:
                 continue
@@ -114,7 +146,6 @@ class OptionFetcher:
             bid = getattr(quote, "bid_price", 0.0) or 0.0
             ask = getattr(quote, "ask_price", 0.0) or 0.0
 
-            # filtrer les instruments illiquides ou quotes invalides
             if bid <= 0 or ask <= bid:
                 continue
 

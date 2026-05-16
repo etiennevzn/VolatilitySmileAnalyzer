@@ -52,8 +52,8 @@ class VolatilitySmileAnalyzer:
 
         try:
             # Since there is no analytical solution for sigma, we test a wide range of values
-            # until we find the one that minimizes the difference between the price
-            # given by the formula and the real price
+            # until we find the one that makes the difference between the price given by 
+            # the B-S formula and the real price equal to 0. 
             return brentq(objective, 1e-6, 5.0)
         except ValueError:
             return None

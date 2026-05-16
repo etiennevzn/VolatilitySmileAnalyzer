@@ -6,12 +6,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="volatility_smile",
     version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
     description="Volatility Smile Analyzer - Visualize and analyze option volatility",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/volatility_smile",
+    url="https://github.com/etiennevzn/VolatilitySmileAnalyzer",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -33,5 +31,7 @@ setup(
         "python-dotenv>=1.0.0",
         "scipy>=1.11.0",
         "scikit-learn>=1.3.0",
+        "alpaca-py>=0.16.0",
+        "websockets>=11.0.3,<12.0.0"
     ],
 )
